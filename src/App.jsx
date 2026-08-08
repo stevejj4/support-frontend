@@ -7,7 +7,9 @@ export default function App() {
   const [networkError, setNetworkError] = useState('');
 
   // Live backend endpoint URL hosted on Render
-  const BACKEND_URL = 'https://onrender.com';
+ // 🌟 FIX: Change this on line 11 to target your explicit server instance URL path
+const BACKEND_URL = 'https://support-backend-hbm0.onrender.com';
+
 
   // Initialize with a friendly welcome message instead of preloading logs
   useEffect(() => {
