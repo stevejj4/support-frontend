@@ -196,14 +196,16 @@ export default function App() {
   <div
     style={{
       width: '100vw',
-      height: '100vh',
-      fontFamily: 'system-ui, sans-serif',
+      // Uses dynamic viewport height to prevent mobile browser bars from cutting off the bottom input
+      height: '100dvh', 
+      fontFamily: 'system-ui, -apple-system, sans-serif',
       boxSizing: 'border-box',
       margin: 0,
       padding: 0,
-      backgroundColor: '#f5f5f5',
+      backgroundColor: '#ffffff',
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      overflow: 'hidden'
     }}
   >
 
@@ -218,23 +220,26 @@ export default function App() {
     >
 
       {/* =====================================================
-          HEADER
+          HEADER (Compacted for Mobile)
       ====================================================== */}
 
       <div
         style={{
-          padding: '20px',
+          padding: '12px 16px',
           background: '#007bff',
           color: 'white',
           textAlign: 'center',
-          flexShrink: 0
+          flexShrink: 0,
+          // Handles top safe area for phones with notches
+          paddingTop: 'calc(12px + env(safe-area-inset-top, 0px))',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
         }}
       >
 
         <h2
           style={{
             margin: 0,
-            fontSize: '1.25rem',
+            fontSize: '1.1rem',
             fontWeight: '600'
           }}
         >
@@ -243,7 +248,7 @@ export default function App() {
 
         <span
           style={{
-            fontSize: '0.8rem',
+            fontSize: '0.75rem',
             opacity: 0.85
           }}
         >
@@ -254,15 +259,19 @@ export default function App() {
 
 
       {/* =====================================================
-          MESSAGE AREA (Fills available space)
+          MESSAGE AREA (Optimized Padding & Fluid Scrolling)
       ====================================================== */}
 
       <div
         style={{
           flex: 1,
           overflowY: 'auto',
-          padding: '20px',
-          background: '#f8f9fa'
+          // Enables native momentum scrolling on iOS devices
+          WebkitOverflowScrolling: 'touch', 
+          padding: '16px 12px',
+          background: '#f8f9fa',
+          display: 'flex',
+          flexDirection: 'column'
         }}
       >
 
@@ -280,7 +289,7 @@ export default function App() {
                   isBot
                     ? 'flex-start'
                     : 'flex-end',
-                marginBottom: '14px'
+                marginBottom: '10px'
               }}
             >
 
@@ -297,17 +306,19 @@ export default function App() {
                       : '#ffffff',
 
                   padding:
-                    '12px 16px',
+                    '10px 14px',
 
+                  // Fluid rounded corners
                   borderRadius:
                     isBot
                       ? '16px 16px 16px 4px'
                       : '16px 16px 4px 16px',
 
-                  maxWidth: '75%',
+                  // Wider message bubbles on narrow mobile screens
+                  maxWidth: '85%',
 
                   boxShadow:
-                    '0 1px 3px rgba(0,0,0,0.05)',
+                    '0 1px 2px rgba(0,0,0,0.05)',
 
                   fontSize:
                     '0.95rem',
@@ -316,7 +327,10 @@ export default function App() {
                     '1.4',
 
                   whiteSpace:
-                    'pre-wrap'
+                    'pre-wrap',
+                  
+                  // Prevents long unbroken URLs or text from blowing out the layout
+                  wordBreak: 'break-word' 
                 }}
               >
                 {msg.text}
@@ -337,7 +351,8 @@ export default function App() {
               color: '#888',
               fontSize: '0.85rem',
               fontStyle: 'italic',
-              paddingLeft: '5px'
+              paddingLeft: '4px',
+              marginTop: '4px'
             }}
           >
             Assistant at work...
@@ -352,11 +367,11 @@ export default function App() {
         {networkError && (
           <div
             style={{
-              margin: '15px 0',
+              margin: '10px 0',
               padding: '10px',
               background: '#f8d7da',
               color: '#721c24',
-              borderRadius: '6px',
+              borderRadius: '8px',
               fontSize: '0.85rem',
               textAlign: 'center',
               fontWeight: 'bold'
@@ -370,19 +385,22 @@ export default function App() {
 
 
       {/* =====================================================
-          INPUT FORM
+          INPUT FORM (Touch & Mobile Keyboard Optimized)
       ====================================================== */}
 
       <form
         onSubmit={handleSendMessage}
         style={{
-          padding: '15px',
+          padding: '10px 12px',
           borderTop:
             '1px solid #e0e0e0',
           display: 'flex',
-          gap: '10px',
+          gap: '8px',
           backgroundColor: '#ffffff',
-          flexShrink: 0
+          flexShrink: 0,
+          alignItems: 'center',
+          // Prevents home indicator overlaps on bezel-less displays (iOS/Android)
+          paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 0px))' 
         }}
       >
 
@@ -394,18 +412,22 @@ export default function App() {
               e.target.value
             )
           }
-          placeholder="Type your question here..."
+          placeholder="Type your question..."
           disabled={isTyping}
           style={{
             flex: 1,
             padding:
-              '12px 14px',
-            borderRadius: '6px',
+              '12px 16px',
+            // Pill shape is easier to tap and look native on phones
+            borderRadius: '24px', 
             border:
-              '1px solid #ccc',
+              '1px solid #ced4da',
+            // 16px font minimum prevents iOS Safari from forcing an ugly auto-zoom effect on input focus
             fontSize:
-              '0.95rem',
-            outline: 'none'
+              '16px', 
+            outline: 'none',
+            backgroundColor: '#f8f9fa',
+            WebkitAppearance: 'none'
           }}
         />
 
@@ -417,8 +439,9 @@ export default function App() {
             !inputValue.trim()
           }
           style={{
+            height: '44px', // Meets minimum standard touch target size heights
             padding:
-              '12px 24px',
+              '0 20px',
             background:
               isTyping ||
               !inputValue.trim()
@@ -426,7 +449,7 @@ export default function App() {
                 : '#007bff',
             color: 'white',
             border: 'none',
-            borderRadius: '6px',
+            borderRadius: '24px',
             fontWeight: 'bold',
             cursor:
               isTyping ||
@@ -434,11 +457,15 @@ export default function App() {
                 ? 'not-allowed'
                 : 'pointer',
             fontSize:
-              '0.95rem'
+              '0.95rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'background-color 0.2s ease'
           }}
         >
           {isTyping
-            ? 'Sending...'
+            ? '...'
             : 'Send'}
         </button>
 
