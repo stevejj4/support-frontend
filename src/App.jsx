@@ -337,7 +337,7 @@ export default function App() {
                 paddingLeft: '5px'
               }}
             >
-              Assistant is working...
+              Assistant at work...
             </div>
           )}
 
