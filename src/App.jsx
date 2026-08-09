@@ -252,252 +252,199 @@ export default function App() {
 
       </div>
 
+
       {/* =====================================================
-          MESSAGES BODY (Scrollable Area)
+          MESSAGE AREA (Fills available space)
       ====================================================== */}
 
       <div
         style={{
-          flexGrow: 1,
-          padding: '24px',
-          backgroundColor: '#f8f9fa',
+          flex: 1,
           overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '16px'
+          padding: '20px',
+          background: '#f8f9fa'
         }}
       >
-        {/* Example System Message */}
-        <div style={{ alignSelf: 'center', backgroundColor: '#e9ecef', padding: '6px 12px', borderRadius: '16px', fontSize: '0.8rem', color: '#6c757d' }}>
-          Chat started
-        </div>
 
-        {/* Example Incoming Message */}
-        
+        {messages.map((msg) => {
+
+          const isBot =
+            msg.sender === 'bot';
+
+          return (
+            <div
+              key={msg.id}
+              style={{
+                display: 'flex',
+                justifyContent:
+                  isBot
+                    ? 'flex-start'
+                    : 'flex-end',
+                marginBottom: '14px'
+              }}
+            >
+
+              <div
+                style={{
+                  backgroundColor:
+                    isBot
+                      ? '#ffffff'
+                      : '#007bff',
+
+                  color:
+                    isBot
+                      ? '#212529'
+                      : '#ffffff',
+
+                  padding:
+                    '12px 16px',
+
+                  borderRadius:
+                    isBot
+                      ? '16px 16px 16px 4px'
+                      : '16px 16px 4px 16px',
+
+                  maxWidth: '75%',
+
+                  boxShadow:
+                    '0 1px 3px rgba(0,0,0,0.05)',
+
+                  fontSize:
+                    '0.95rem',
+
+                  lineHeight:
+                    '1.4',
+
+                  whiteSpace:
+                    'pre-wrap'
+                }}
+              >
+                {msg.text}
+              </div>
+
+            </div>
+          );
+        })}
+
+
+        {/* ===================================================
+            TYPING INDICATOR
+        ==================================================== */}
+
+        {isTyping && (
+          <div
+            style={{
+              color: '#888',
+              fontSize: '0.85rem',
+              fontStyle: 'italic',
+              paddingLeft: '5px'
+            }}
+          >
+            Assistant at work...
+          </div>
+        )}
+
+
+        {/* ===================================================
+            ERROR
+        ==================================================== */}
+
+        {networkError && (
+          <div
+            style={{
+              margin: '15px 0',
+              padding: '10px',
+              background: '#f8d7da',
+              color: '#721c24',
+              borderRadius: '6px',
+              fontSize: '0.85rem',
+              textAlign: 'center',
+              fontWeight: 'bold'
+            }}
+          >
+            {networkError}
+          </div>
+        )}
+
       </div>
 
-      {/*
-       =====================================================
-          INPUT FOOTER
+
+      {/* =====================================================
+          INPUT FORM
       ====================================================== */}
 
-      <div
+      <form
+        onSubmit={handleSendMessage}
         style={{
-          padding: '16px 24px',
-          borderTop: '1px solid #e0e0e0',
-          backgroundColor: '#ffffff',
+          padding: '15px',
+          borderTop:
+            '1px solid #e0e0e0',
           display: 'flex',
-          gap: '12px',
-          alignItems: 'center',
+          gap: '10px',
+          backgroundColor: '#ffffff',
           flexShrink: 0
         }}
       >
-        <input 
-          type="text" 
-          placeholder="Type your message..." 
-          style={{ flexGrow: 1, padding: '12px 16px', borderRadius: '24px', border: '1px solid #ced4da', fontSize: '0.95rem', outline: 'none' }}
+
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) =>
+            setInputValue(
+              e.target.value
+            )
+          }
+          placeholder="Type your question here..."
+          disabled={isTyping}
+          style={{
+            flex: 1,
+            padding:
+              '12px 14px',
+            borderRadius: '6px',
+            border:
+              '1px solid #ccc',
+            fontSize:
+              '0.95rem',
+            outline: 'none'
+          }}
         />
-        <button 
-          style={{ backgroundColor: '#007bff', color: 'white', border: 'none', padding: '12px 20px', borderRadius: '24px', fontWeight: '600', cursor: 'pointer', fontSize: '0.95rem' }}
-        >
-          Send
-        </button>
-      </div>
 
-        {/* =====================================================
-            MESSAGE AREA
-        ====================================================== */}
 
-        <div
+        <button
+          type="submit"
+          disabled={
+            isTyping ||
+            !inputValue.trim()
+          }
           style={{
-            height: '450px',
-            overflowY: 'auto',
-            padding: '20px',
-            background: '#f8f9fa'
-          }}
-        >
-
-          {messages.map((msg) => {
-
-            const isBot =
-              msg.sender === 'bot';
-
-            return (
-              <div
-                key={msg.id}
-                style={{
-                  display: 'flex',
-                  justifyContent:
-                    isBot
-                      ? 'flex-start'
-                      : 'flex-end',
-                  marginBottom: '14px'
-                }}
-              >
-
-                <div
-                  style={{
-                    backgroundColor:
-                      isBot
-                        ? '#ffffff'
-                        : '#007bff',
-
-                    color:
-                      isBot
-                        ? '#212529'
-                        : '#ffffff',
-
-                    padding:
-                      '12px 16px',
-
-                    borderRadius:
-                      isBot
-                        ? '16px 16px 16px 4px'
-                        : '16px 16px 4px 16px',
-
-                    maxWidth: '75%',
-
-                    boxShadow:
-                      '0 1px 3px rgba(0,0,0,0.05)',
-
-                    fontSize:
-                      '0.95rem',
-
-                    lineHeight:
-                      '1.4',
-
-                    whiteSpace:
-                      'pre-wrap'
-                  }}
-                >
-                  {msg.text}
-                </div>
-
-              </div>
-            );
-          })}
-
-
-          {/* ===================================================
-              TYPING INDICATOR
-          ==================================================== */}
-
-          {isTyping && (
-            <div
-              style={{
-                color: '#888',
-                fontSize: '0.85rem',
-                fontStyle: 'italic',
-                paddingLeft: '5px'
-              }}
-            >
-              Assistant at work...
-            </div>
-          )}
-
-
-          {/* ===================================================
-              ERROR
-          ==================================================== */}
-
-          {networkError && (
-            <div
-              style={{
-                margin: '15px 0',
-                padding: '10px',
-                background: '#f8d7da',
-                color: '#721c24',
-                borderRadius: '6px',
-                fontSize: '0.85rem',
-                textAlign: 'center',
-                fontWeight: 'bold'
-              }}
-            >
-              {networkError}
-            </div>
-          )}
-
-        </div>
-
-
-        {/* =====================================================
-            INPUT FORM
-        ====================================================== */}
-
-        <form
-          onSubmit={handleSendMessage}
-          style={{
-            padding: '15px',
-            borderTop:
-              '1px solid #e0e0e0',
-            display: 'flex',
-            gap: '10px',
-            backgroundColor: '#ffffff',
-            borderRadius:
-              '0 0 11px 11px'
-          }}
-        >
-
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) =>
-              setInputValue(
-                e.target.value
-              )
-            }
-            placeholder="Type your question here..."
-            disabled={isTyping}
-            style={{
-              flex: 1,
-              padding:
-                '12px 14px',
-              borderRadius: '6px',
-              border:
-                '1px solid #ccc',
-              fontSize:
-                '0.95rem',
-              outline: 'none'
-            }}
-          />
-
-
-          <button
-            type="submit"
-            disabled={
+            padding:
+              '12px 24px',
+            background:
               isTyping ||
               !inputValue.trim()
-            }
-            style={{
-              padding:
-                '12px 24px',
-              background:
-                isTyping ||
-                !inputValue.trim()
-                  ? '#9ec5fe'
-                  : '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              fontWeight: 'bold',
-              cursor:
-                isTyping ||
-                !inputValue.trim()
-                  ? 'not-allowed'
-                  : 'pointer',
-              fontSize:
-                '0.95rem'
-            }}
-          >
-            {isTyping
-              ? 'Sending...'
-              : 'Send'}
-          </button>
+                ? '#9ec5fe'
+                : '#007bff',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            fontWeight: 'bold',
+            cursor:
+              isTyping ||
+              !inputValue.trim()
+                ? 'not-allowed'
+                : 'pointer',
+            fontSize:
+              '0.95rem'
+          }}
+        >
+          {isTyping
+            ? 'Sending...'
+            : 'Send'}
+        </button>
 
-        </form>
-
-      </div>
+      </form>
 
     </div>
-  );
+  </div>
+);
 }
