@@ -193,62 +193,117 @@ export default function App() {
   // ============================================================
 
   return (
+  <div
+    style={{
+      width: '100vw',
+      height: '100vh',
+      fontFamily: 'system-ui, sans-serif',
+      boxSizing: 'border-box',
+      margin: 0,
+      padding: 0,
+      backgroundColor: '#f5f5f5',
+      display: 'flex',
+      flexDirection: 'column'
+    }}
+  >
+
     <div
       style={{
-        maxWidth: '600px',
-        margin: '40px auto',
-        fontFamily: 'system-ui, sans-serif',
-        padding: '0 20px'
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: '#ffffff'
       }}
     >
 
+      {/* =====================================================
+          HEADER
+      ====================================================== */}
+
       <div
         style={{
-          border: '1px solid #e0e0e0',
-          borderRadius: '12px',
-          boxShadow:
-            '0 4px 12px rgba(0,0,0,0.06)',
-          display: 'flex',
-          flexDirection: 'column',
-          backgroundColor: '#ffffff'
+          padding: '20px',
+          background: '#007bff',
+          color: 'white',
+          textAlign: 'center',
+          flexShrink: 0
         }}
       >
 
-        {/* =====================================================
-            HEADER
-        ====================================================== */}
-
-        <div
+        <h2
           style={{
-            padding: '20px',
-            background: '#007bff',
-            color: 'white',
-            borderRadius: '11px 11px 0 0',
-            textAlign: 'center'
+            margin: 0,
+            fontSize: '1.25rem',
+            fontWeight: '600'
           }}
         >
+          Support Assistant
+        </h2>
 
-          <h2
-            style={{
-              margin: 0,
-              fontSize: '1.25rem',
-              fontWeight: '600'
-            }}
-          >
-            Support Assistant
-          </h2>
+        <span
+          style={{
+            fontSize: '0.8rem',
+            opacity: 0.85
+          }}
+        >
+          Support Chat
+        </span>
 
-          <span
-            style={{
-              fontSize: '0.8rem',
-              opacity: 0.85
-            }}
-          >
-            Support Chat
-          </span>
+      </div>
 
+      {/* =====================================================
+          MESSAGES BODY (Scrollable Area)
+      ====================================================== */}
+
+      <div
+        style={{
+          flexGrow: 1,
+          padding: '24px',
+          backgroundColor: '#f8f9fa',
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px'
+        }}
+      >
+        {/* Example System Message */}
+        <div style={{ alignSelf: 'center', backgroundColor: '#e9ecef', padding: '6px 12px', borderRadius: '16px', fontSize: '0.8rem', color: '#6c757d' }}>
+          Chat started
         </div>
 
+        {/* Example Incoming Message */}
+        <div style={{ alignSelf: 'flex-start', maxWidth: '70%', backgroundColor: '#ffffff', padding: '12px 16px', borderRadius: '4px 16px 16px 16px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', fontSize: '0.95rem', color: '#212529' }}>
+          Hello! How can I help you today?
+        </div>
+      </div>
+
+      {/* =====================================================
+          INPUT FOOTER
+      ====================================================== */}
+
+      <div
+        style={{
+          padding: '16px 24px',
+          borderTop: '1px solid #e0e0e0',
+          backgroundColor: '#ffffff',
+          display: 'flex',
+          gap: '12px',
+          alignItems: 'center',
+          flexShrink: 0
+        }}
+      >
+        <input 
+          type="text" 
+          placeholder="Type your message..." 
+          style={{ flexGrow: 1, padding: '12px 16px', borderRadius: '24px', border: '1px solid #ced4da', fontSize: '0.95rem', outline: 'none' }}
+        />
+        <button 
+          style={{ backgroundColor: '#007bff', color: 'white', border: 'none', padding: '12px 20px', borderRadius: '24px', fontWeight: '600', cursor: 'pointer', fontSize: '0.95rem' }}
+        >
+          Send
+        </button>
+      </div>
 
         {/* =====================================================
             MESSAGE AREA
