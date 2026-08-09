@@ -273,12 +273,11 @@ export default function App() {
         </div>
 
         {/* Example Incoming Message */}
-        <div style={{ alignSelf: 'flex-start', maxWidth: '70%', backgroundColor: '#ffffff', padding: '12px 16px', borderRadius: '4px 16px 16px 16px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', fontSize: '0.95rem', color: '#212529' }}>
-          Hello! How can I help you today?
-        </div>
+        
       </div>
 
-      {/* =====================================================
+      {/*
+       =====================================================
           INPUT FOOTER
       ====================================================== */}
 
