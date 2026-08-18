@@ -291,9 +291,10 @@ export default function App() {
 
                 <div className="bubble">
                   <div className="bubble-text">{msg.text}</div>
-                  <div className="bubble-meta">
-                    <time className="time">{new Date(msg.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</time>
-                  </div>
+                </div>
+
+                <div className="timestamp">
+                  <time className="time">{new Date(msg.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</time>
                 </div>
               </div>
             );
@@ -310,7 +311,7 @@ export default function App() {
             <div className="avatar" aria-hidden>
               <svg viewBox="0 0 24 24" className="avatar-svg"><circle cx="12" cy="8" r="3"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
             </div>
-            <div className="bubble">
+            <div className="bubble typing-bubble">
               <div className="typing">
                 <span className="typing-dot" />
                 <span className="typing-dot" />
@@ -350,40 +351,29 @@ export default function App() {
       ====================================================== */}
 
       <form className="chat-input" onSubmit={handleSendMessage}>
-        <div className="input-pill">
-          <input
-            className="input-field"
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Type your question..."
-            disabled={isTyping}
-          />
-          <button
-            type="submit"
-            className={"send-btn " + (isTyping || !inputValue.trim() ? 'disabled' : '')}
-            disabled={isTyping || !inputValue.trim()}
-          >
-            {isTyping ? '...' : 'Send'}
-          </button>
+        <div className="input-left">
+          <div className="input-pill">
+            <input
+              className="input-field"
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Type your question..."
+              disabled={isTyping}
+            />
+            <button
+              type="submit"
+              className={"send-btn " + (isTyping || !inputValue.trim() ? 'disabled' : '')}
+              disabled={isTyping || !inputValue.trim()}
+            >
+              {isTyping ? '...' : 'Send'}
+            </button>
+          </div>
         </div>
 
-        {!hasUserSent && (
-          <div className="suggestions" aria-hidden={hasUserSent}>
-            {['How to transfer a member', 'Update next of kin', 'Request principal info'].map((s) => (
-              <button
-                key={s}
-                type="button"
-                className="suggestion-pill"
-                onClick={() => setInputValue(s)}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div className="footer-attr">Powered by Support Assistant • © Your Org</div>
+        <div className="input-right">
+          <div className="footer-attr">Powered by Support Assistant</div>
+        </div>
       </form>
 
     </div>
