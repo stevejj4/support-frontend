@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import './ChatWidget.css';
 
 export default function App() {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [networkError, setNetworkError] = useState('');
+  const [hasUserSent, setHasUserSent] = useState(false);
+  const scrollRef = useRef(null);
 
   // ============================================================
   // BACKEND CONFIGURATION
   // ============================================================
 
-  const rawBackendUrl =
-    import.meta.env.VITE_BACKEND_URL?.trim();
+  const rawBackendUrl = import.meta.env.VITE_BACKEND_URL?.trim();
 
   const BACKEND_URL = rawBackendUrl
     ? rawBackendUrl.replace(/\/+$/, '')
@@ -24,13 +26,25 @@ export default function App() {
   useEffect(() => {
     setMessages([
       {
-        id: 'welcome',
+        id: `bot-${Date.now()}`,
         sender: 'bot',
         text:
-          'Hello! I am your Support Assistant. How can I help you with Member Transfers, Next of Kin updates, or Principal information requests today?'
+          'Hello! I am your Support Assistant. How can I help you with Member Transfers, Next of Kin updates, or Principal information requests today?',
+        time: new Date().toISOString()
       }
     ]);
   }, []);
+
+  // Auto-scroll when messages or typing change
+  useEffect(() => {
+    try {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [messages, isTyping]);
 
   // ============================================================
   // SEND MESSAGE
@@ -43,8 +57,7 @@ export default function App() {
       return;
     }
 
-    const userMessageText =
-      inputValue.trim();
+    const userMessageText = inputValue.trim();
 
     setInputValue('');
     setNetworkError('');
@@ -56,7 +69,8 @@ export default function App() {
     const userBubble = {
       id: `user-${Date.now()}`,
       sender: 'user',
-      text: userMessageText
+      text: userMessageText,
+      time: new Date().toISOString()
     };
 
     setMessages((prev) => [
@@ -64,6 +78,7 @@ export default function App() {
       userBubble
     ]);
 
+    setHasUserSent(true);
     setIsTyping(true);
 
     try {
@@ -167,7 +182,8 @@ export default function App() {
         {
           id: `bot-${Date.now()}`,
           sender: 'bot',
-          text: botReply
+          text: botReply,
+          time: new Date().toISOString()
         }
       ]);
 
@@ -223,122 +239,66 @@ export default function App() {
           HEADER (Compacted for Mobile)
       ====================================================== */}
 
-      <div
-        style={{
-          padding: '12px 16px',
-          background: '#007bff',
-          color: 'white',
-          textAlign: 'center',
-          flexShrink: 0,
-          // Handles top safe area for phones with notches
-          paddingTop: 'calc(12px + env(safe-area-inset-top, 0px))',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-        }}
-      >
+      <header className="chat-header">
+        <div className="header-left">
+          <svg className="chat-icon" viewBox="0 0 24 24" aria-hidden>
+            <path fill="currentColor" d="M4 4h16v10H7l-3 3V4z" />
+          </svg>
+          <div>
+            <div className="chat-title">Support Assistant</div>
+            <div className="chat-sub">Support Chat</div>
+          </div>
+        </div>
 
-        <h2
-          style={{
-            margin: 0,
-            fontSize: '1.1rem',
-            fontWeight: '600'
-          }}
-        >
-          Support Assistant
-        </h2>
-
-        <span
-          style={{
-            fontSize: '0.75rem',
-            opacity: 0.85
-          }}
-        >
-          Support Chat
-        </span>
-
-      </div>
+        <div className="header-right">
+          <div className="status-dot" title="Online" />
+          <button className="menu-btn" aria-label="Menu">⋮</button>
+        </div>
+      </header>
 
 
       {/* =====================================================
           MESSAGE AREA (Optimized Padding & Fluid Scrolling)
       ====================================================== */}
 
-      <div
-        style={{
-          flex: 1,
-          overflowY: 'auto',
-          // Enables native momentum scrolling on iOS devices
-          WebkitOverflowScrolling: 'touch', 
-          padding: '16px 12px',
-          background: '#f8f9fa',
-          display: 'flex',
-          flexDirection: 'column'
-        }}
-      >
+      <div className="chat-body" ref={scrollRef}>
 
-        {messages.map((msg) => {
-
-          const isBot =
-            msg.sender === 'bot';
-
-          return (
-            <div
-              key={msg.id}
-              style={{
-                display: 'flex',
-                justifyContent:
-                  isBot
-                    ? 'flex-start'
-                    : 'flex-end',
-                marginBottom: '10px'
-              }}
+        <div className="topic-chips" aria-hidden={hasUserSent}>
+          {['Member Transfers', 'Principals', 'Next of Kin'].map((t) => (
+            <button
+              key={t}
+              className="chip"
+              onClick={() => setInputValue(t)}
             >
+              {t}
+            </button>
+          ))}
+        </div>
 
+        <div className="messages">
+          {messages.map((msg) => {
+            const isBot = msg.sender === 'bot';
+            return (
               <div
-                style={{
-                  backgroundColor:
-                    isBot
-                      ? '#ffffff'
-                      : '#007bff',
-
-                  color:
-                    isBot
-                      ? '#212529'
-                      : '#ffffff',
-
-                  padding:
-                    '10px 14px',
-
-                  // Fluid rounded corners
-                  borderRadius:
-                    isBot
-                      ? '16px 16px 16px 4px'
-                      : '16px 16px 4px 16px',
-
-                  // Wider message bubbles on narrow mobile screens
-                  maxWidth: '85%',
-
-                  boxShadow:
-                    '0 1px 2px rgba(0,0,0,0.05)',
-
-                  fontSize:
-                    '0.95rem',
-
-                  lineHeight:
-                    '1.4',
-
-                  whiteSpace:
-                    'pre-wrap',
-                  
-                  // Prevents long unbroken URLs or text from blowing out the layout
-                  wordBreak: 'break-word' 
-                }}
+                key={msg.id}
+                className={['message-row', isBot ? 'bot' : 'user'].join(' ')}
               >
-                {msg.text}
-              </div>
+                {isBot && (
+                  <div className="avatar" aria-hidden>
+                    <svg viewBox="0 0 24 24" className="avatar-svg"><circle cx="12" cy="8" r="3"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+                  </div>
+                )}
 
-            </div>
-          );
-        })}
+                <div className="bubble">
+                  <div className="bubble-text">{msg.text}</div>
+                  <div className="bubble-meta">
+                    <time className="time">{new Date(msg.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</time>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
 
 
         {/* ===================================================
@@ -346,16 +306,17 @@ export default function App() {
         ==================================================== */}
 
         {isTyping && (
-          <div
-            style={{
-              color: '#888',
-              fontSize: '0.85rem',
-              fontStyle: 'italic',
-              paddingLeft: '4px',
-              marginTop: '4px'
-            }}
-          >
-            Assistant at work...
+          <div className="message-row bot typing-row">
+            <div className="avatar" aria-hidden>
+              <svg viewBox="0 0 24 24" className="avatar-svg"><circle cx="12" cy="8" r="3"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+            </div>
+            <div className="bubble">
+              <div className="typing">
+                <span className="typing-dot" />
+                <span className="typing-dot" />
+                <span className="typing-dot" />
+              </div>
+            </div>
           </div>
         )}
 
@@ -388,87 +349,41 @@ export default function App() {
           INPUT FORM (Touch & Mobile Keyboard Optimized)
       ====================================================== */}
 
-      <form
-        onSubmit={handleSendMessage}
-        style={{
-          padding: '10px 12px',
-          borderTop:
-            '1px solid #e0e0e0',
-          display: 'flex',
-          gap: '8px',
-          backgroundColor: '#ffffff',
-          flexShrink: 0,
-          alignItems: 'center',
-          // Prevents home indicator overlaps on bezel-less displays (iOS/Android)
-          paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 0px))' 
-        }}
-      >
+      <form className="chat-input" onSubmit={handleSendMessage}>
+        <div className="input-pill">
+          <input
+            className="input-field"
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Type your question..."
+            disabled={isTyping}
+          />
+          <button
+            type="submit"
+            className={"send-btn " + (isTyping || !inputValue.trim() ? 'disabled' : '')}
+            disabled={isTyping || !inputValue.trim()}
+          >
+            {isTyping ? '...' : 'Send'}
+          </button>
+        </div>
 
-        <input
-          type="text"
-          value={inputValue}
-          onChange={(e) =>
-            setInputValue(
-              e.target.value
-            )
-          }
-          placeholder="Type your question..."
-          disabled={isTyping}
-          style={{
-            flex: 1,
-            padding:
-              '12px 16px',
-            // Pill shape is easier to tap and look native on phones
-            borderRadius: '24px', 
-            border:
-              '1px solid #ced4da',
-            // 16px font minimum prevents iOS Safari from forcing an ugly auto-zoom effect on input focus
-            fontSize:
-              '16px', 
-            outline: 'none',
-            backgroundColor: '#f8f9fa',
-            WebkitAppearance: 'none'
-          }}
-        />
+        {!hasUserSent && (
+          <div className="suggestions" aria-hidden={hasUserSent}>
+            {['How to transfer a member', 'Update next of kin', 'Request principal info'].map((s) => (
+              <button
+                key={s}
+                type="button"
+                className="suggestion-pill"
+                onClick={() => setInputValue(s)}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
 
-
-        <button
-          type="submit"
-          disabled={
-            isTyping ||
-            !inputValue.trim()
-          }
-          style={{
-            height: '44px', // Meets minimum standard touch target size heights
-            padding:
-              '0 20px',
-            background:
-              isTyping ||
-              !inputValue.trim()
-                ? '#9ec5fe'
-                : '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '24px',
-            fontWeight: 'bold',
-            cursor:
-              isTyping ||
-              !inputValue.trim()
-                ? 'not-allowed'
-                : 'pointer',
-            fontSize:
-              '0.95rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'background-color 0.2s ease'
-          }}
-        >
-          {isTyping
-            ? '...'
-            : 'Send'}
-        </button>
-
+        <div className="footer-attr">Powered by Support Assistant • © Your Org</div>
       </form>
 
     </div>
