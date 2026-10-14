@@ -5,3 +5,4 @@ It retrives data from knowledge base
 Grok LLM
 RAG
 Express js
+React JS
