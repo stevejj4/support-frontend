@@ -6,3 +6,4 @@ Grok LLM
 RAG
 Express js
 React JS
+Agentic AI
